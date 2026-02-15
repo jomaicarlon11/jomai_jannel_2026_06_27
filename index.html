@@ -1,0 +1,1463 @@
+<?php
+    include("_dbconfig.php");
+    $SQL = "";
+    $array_datasss = [];
+
+    try{
+        $client_inf0_array = get_client_information();
+
+        $array_datasss = [
+            '_XXX_ip_address' => $client_inf0_array["ip_address"],
+            '_XXX_location' => $client_inf0_array["location"],
+        ];
+
+        $SQL =" INSERT INTO ".$pdo_database_name.".access_url_web_logs (";
+        $SQL.=" ip_address";
+        $SQL.=" ,location";
+        $SQL.=" ) VALUES (";
+        $SQL.=" :_XXX_ip_address";
+        $SQL.=" ,:_XXX_location";
+        $SQL.=" );";
+
+        if (!$pdo_db_connection->prepare($SQL)->execute($array_datasss)) {
+            insert_error_logs($pdo_db_connection, $pdo_database_name, "Execute Insert Query Error || " . $SQL);
+        }
+    }
+
+    catch (Exception $e){
+        insert_error_logs($pdo_db_connection, $pdo_database_name, "THROW EXCEPTION!!! || Exception Message: ".$e->getMessage()." || SQL Query: " . $SQL);
+    }
+
+
+
+    function insert_error_logs($pd0_db_connection, $pd0_database_name, $err0r_message){
+        $array_datasss = [ '_XXX_error_message' => $err0r_message ];
+        $SQL ="INSERT INTO ".$pd0_database_name.".access_url_web_error_logs (error_message) VALUES (:_XXX_error_message);";
+        $pd0_db_connection->prepare($SQL)->execute($array_datasss);
+    }
+
+    function get_client_information() {
+        $client_inf0 = [
+            "ip_address" => "",
+            "location" => "",
+        ];
+
+        // GET IP Address
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $client_inf0["ip_address"] = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $client_inf0["ip_address"] = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+        } else {
+            $client_inf0["ip_address"] = $_SERVER['REMOTE_ADDR'];
+        }
+
+        //GET Location
+        $details = json_decode(file_get_contents("http://ip-api.com/json/".$client_inf0["ip_address"]));
+        $client_inf0["location"] = "COUNTRY: ".$details->country." || REGION: ".$details->regionName." || CITY: ".$details->city;
+
+        // https://www.maxmind.com/en/account/sign-in
+        // $client = new Client(1257934, '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');
+        // $record = $client->country($client_inf0["ip_address"]);
+        // $client_inf0["location"] = "COUNTRY: ".$record->country->isoCode." || CITY: ".$record->city->isoCode;
+
+        return $client_inf0;
+    }
+
+?>
+
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Jomai & Jannel | 2026-06-27</title>
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;500&amp;display=swap"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;500&amp;display=swap" media="print" onload="this.media='all'"/>
+
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;500&amp;display=swap"/>
+        </noscript>
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap" media="print" onload="this.media='all'"/>
+
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap"/>
+        </noscript>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+
+        <link href="css/bootstrap.min.css?ver=1.1.0" rel="stylesheet">
+        <link href="css/font-awesome/css/all.min.css?ver=1.1.0" rel="stylesheet">
+        <link href="css/aos.css?ver=1.1.0" rel="stylesheet">
+        <link href="css/ekko-lightbox.css?ver=1.1.0" rel="stylesheet">
+        <link href="css/sweetalert2.min.css" rel="stylesheet">
+        <link href="css/main.css?ver=1.1.0" rel="stylesheet">
+
+        <noscript>
+            <style type="text/css">
+                [data-aos] {
+                    opacity: 1 !important;
+                    transform: translate(0) scale(1) !important;
+                }
+            </style>
+        </noscript>
+
+        <style>
+            .carousel,
+            .carousel-inner,
+            .carousel-item {
+                overflow: hidden;
+            }
+
+            .carousel-item {
+                padding: 25px 35px 35px;
+            }
+
+            .carousel-item .row {
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .card {
+                border: none;
+                border-radius: 14px;
+                background: #fff;
+                box-shadow:
+                    0 3px 6px rgba(0, 0, 0, 0.08),
+                    0 10px 20px rgba(0, 0, 0, 0.12);
+            }
+        </style>
+    </head>
+
+    <body id="top">
+        <header>
+
+        </header>
+        <div class="page-content">
+            <div class="div">
+                <div class="ww-home-page" id="home">
+                    <div class="ww-wedding-announcement d-flex align-items-center justify-content-start">
+                        <div class="container ww-announcement-container">
+                            <p class="ww-couple-name ww-title" data-aos="zoom-in-down" data-aos-delay="300" data-aos-duration="1000">Jomai & Jannel</p><img class="img-fluid mt-1" src="images/save_the_date.png" alt="Save the Date" data-aos="zoom-in-down" data-aos-delay="300" data-aos-duration="1000"/>
+                            <p class="h2 mt-5 ww-title" data-aos="zoom-in-down" data-aos-delay="300" data-aos-duration="1000" data-aos-offset="10"><b>27<sup>th</sup> June, 2026</b></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="ww-nav-bar sticky-top bg-light">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <div class="container">
+                            <a href="https://jomai-jannel-2026-06-27.duckdns.org/">
+                                <svg class="heart" viewBox="0 0 32 29.6">
+                                    <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+                                </svg>
+                            </a>
+                            <h1 class="h2">
+                                <a class="pl-4 navbar-brand" href="https://jomai-jannel-2026-06-27.duckdns.org/">Jomai & Jannel Wedding</a>
+                            </h1>
+
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ww-navbarNav" aria-controls="ww-navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+
+                            <div class="collapse navbar-collapse text-uppercase" id="ww-navbarNav">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item"><a class="nav-link smooth-scroll" href="#home">Home</a></li>
+                                    <li class="nav-item"><a class="nav-link smooth-scroll" href="#couple">Couple</a></li>
+                                    <li class="nav-item"><a class="nav-link smooth-scroll" href="#events">Events</a></li>
+                                    <li class="nav-item"><a class="nav-link smooth-scroll" href="#people">People</a></li>
+                                    <li class="nav-item"><a class="nav-link smooth-scroll" href="#gallery">Gallery</a></li>
+                                    <li class="nav-item"><a class="nav-link smooth-scroll" href="#rsvp">RSVP</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+                <div class="ww-section" id="couple">
+                    <div class="container">
+                        <h2 class="h1 text-center pb-3 ww-title" data-aos="zoom-in-down" data-aos-duration="1000">Groom &nbsp;& &nbsp;Bride</h2>
+                        <div class="row text-center">
+                            <div class="col-md-6">
+                                <div class="mt-3">
+                                    <img class="img-fluid" src="images/groom.jpeg" alt="Groom" data-aos="flip-left" data-aos-duration="1000"/>
+                                    <!-- <p class="pt-3 text-left text-muted">Hi I am John Malachi Carlon</p> -->
+                                    <h3 class="h2 ww-title mt-3">John &nbspMalachi &nbspM. &nbspCarlon</h3>
+                                    <div class="ww-social-links">
+                                        <a class="btn btn-link" href="https://facebook.com/jomaicarlon11/" target="_blank"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                                        <a class="btn btn-link" href="https://instagram.com/jayehmcarlon/" target="_blank"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                                        <a class="btn btn-link" href="https://tiktok.com/@jomaicarlon11/" target="_blank"><i class="fab fa-tiktok" aria-hidden="true"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mt-3">
+                                    <img class="img-fluid" src="images/bride.jpeg" alt="Bride" data-aos="flip-right" data-aos-duration="1000"/>
+                                    <!-- <p class="pt-3 text-left text-muted">Hi I am Maria Jannel Lirio</p> -->
+                                    <h3 class="h2 ww-title mt-3">Maria &nbspJannel &nbspP. &nbspLirio</h3>
+                                    <div class="ww-social-links">
+                                        <a class="btn btn-link" href="https://facebook.com/jannela16.lirio/" target="_blank"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                                        <a class="btn btn-link" href="https://instagram.com/ehmjaylirio/" target="_blank"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                                        <a class="btn btn-link" href="https://tiktok.com/@mariajannellirio/" target="_blank"><i class="fab fa-tiktok" aria-hidden="true"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ww-section bg-light" id="events">
+                    <div class="container ww-wedding-event">
+                        <h2 class="h1 text-center pb-3 ww-title" data-aos="zoom-in-down" data-aos-duration="1000">Wedding Events</h2>
+                        <div class="row">
+                            <div class="col-md-7 col-sm-12">
+                                <div class="my-3">
+                                    <div class="h4">Ceremony & Reception Venue</div>
+                                    <ul>
+                                        <li>
+                                            <i class="text-muted fas fa-map-marker-alt"></i>
+                                            <span class="pl-2 text-muted"><strong>Dona Juana Garden Resort, Cabuyao Laguna, PH</strong></span>
+                                        </li>
+                                        <li class="pt-2">
+                                            <i class="text-muted far fa-calendar-alt"></i>
+                                            <span class="pl-2 text-muted">27 June 2026, 2PM - 7PM</span>
+                                        </li>
+                                    </ul>
+                                    <p>Dona Juana Garden Resort, located in East Emerald Street, Don Onofre Subdivision, Brgy. Banay-banay, 4025 Cabuyao, Laguna, is a peaceful and welcoming place that is surrounded by greenery and relaxing garden atmosphere.</p>
+                                    <p>The wedding event venue can be found on navigation map apps by searching the name “Dona Juana Garden Resort” or the nearby area of Don Onofre Subdivision.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-sm-12">
+                                <div class="my-3">
+                                    <img class="img-fluid" src="images/event_venue.jpeg" alt="Wedding Venue" data-aos="fade-down-right" data-aos-duration="1000"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-7 col-sm-12">
+                                <div class="my-3">
+                                    <div class="h4">Event Motif & Theme</div>
+                                    <ul>
+                                        <li>
+                                            <i class="text-muted fas fa-adjust"></i>
+                                            <span class="pl-2 text-muted"><strong>THEME: Spring Season</strong></span>
+                                        </li>
+                                        <li class="pt-2">
+                                            <i class="text-muted fas fa-palette"></i>
+                                            <span class="pl-2 text-muted">Peach<b>;</b> Pink<b>;</b> Beige<b>;</b> Rose Gold<b>;</b> Gray<b>;</b></span>
+                                        </li>
+                                    </ul>
+                                    <p>We chose the spring theme for our wedding because it represents new life, growth, and fresh beginnings. Just like spring brings new blooms after a long season, this marks the start of a new chapter in our love story—full of hope, renewal, and a promise of a life that will blossom together.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-sm-12">
+                                <div class="my-3">
+                                    <img class="img-fluid" src="images/event_motif_theme.jpg" alt="Event Motif & Theme" data-aos="fade-up-right" data-aos-duration="1000"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ww-section" id="people">
+                    <div class="container ww-couple-friends">
+                        <h2 class="h1 text-center pt-3 ww-title" data-aos="zoom-in-down" data-aos-duration="1000">Parents &nbsp;of &nbsp;the &nbsp;Groom &nbsp;& &nbsp;Bride</h2>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mr. &nbsp;Agustin &nbsp;D. &nbsp;Carlon</div>
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Delia &nbsp;M. &nbsp;Carlon</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Ernesto &nbsp;J. &nbsp;Lirio &nbsp;✞​</div>
+                                <div class="h5 text-center ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Gildo &nbsp;J. &nbsp;Lirio (<span class="text-muted" style="font-family: 'calibri'; font-size: 1.1rem;"><i>To&nbsp;walk&nbsp;in&nbsp;the&nbsp;aisle</i></span>)</div>
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mrs. &nbsp;Emelita &nbsp;P. &nbsp;Lirio</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+
+
+                        <h2 class="h1 text-center pt-3 ww-title mt-5" data-aos="zoom-in-down" data-aos-duration="1000">Groomsmen &nbsp;& &nbsp;Bridesmaids</h2>
+                        <!-- <div class="card d-block mb-3">
+                            <div class="card-body text-center">
+                                <div class="row">
+                                    <div class="col-md-0 col-lg-1">
+
+                                    </div>
+                                    <div class="col-md-12 col-lg-5" data-aos="fade-down-right" data-aos-duration="1500">
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Freddie Lirio</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Rosalie Lirio</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Charles Tingson</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Cathy Tingson</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Vicky Malabanan</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Bambie Malabanan</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Leigh Narvaez</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Jeck Narvaez</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Mark Lim</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Janette Lim</div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-5" data-aos="fade-down-left" data-aos-duration="1500">
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Gemma Amisola</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Anton Amisola</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Maria Teresita Flores</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Rod Dinfotan</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Alfredo De Guzman</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Sophia De Guzman</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Elaine Coronado</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Albert Coronado</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mrs. Manilyn Matira</div>
+                                        <div class="h3 text-center pt-3 ww-title">Mr. Louie Matira</div>
+                                    </div>
+                                    <div class="col-md-0 col-lg-1">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="carousel slide d-none d-lg-block" id="ww-carouselIndicator-DESKTOP" data-ride="carousel" data-aos="zoom-in-up" data-aos-duration="1000" data-bs-interval="3000">
+                            <ol class="carousel-indicators">
+                                <li data-target="#ww-carouselIndicator-DESKTOP" data-slide-to="0" class="active"></li>
+                                <li data-target="#ww-carouselIndicator-DESKTOP" data-slide-to="1"></li>
+                                <li data-target="#ww-carouselIndicator-DESKTOP" data-slide-to="2"></li>
+                                <li data-target="#ww-carouselIndicator-DESKTOP" data-slide-to="3"></li>
+                                <li data-target="#ww-carouselIndicator-DESKTOP" data-slide-to="4"></li>
+                                <li data-target="#ww-carouselIndicator-DESKTOP" data-slide-to="5"></li>
+                                <li data-target="#ww-carouselIndicator-DESKTOP" data-slide-to="6"></li>
+                            </ol>
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <!-- <div class="mt-4"> -->
+                                                <img class="card-img-top" src="images/grooms_men/1d.jpg" alt=""/>
+                                                <!-- </div> -->
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Aldale De Guzman</div>
+                                                    <!-- <p class="mb-0 text-muted">Best Friend</p> -->
+                                                    <p class="text-muted">Best Man</p>
+                                                    <!-- <div class="ww-social-links">
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-google-plus-g" aria-hidden="true"></i></a>
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                                                    </div> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1f.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Emie Joy Lirio</div>
+                                                    <p class="text-muted">Maid of Honor</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1e.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Rose Anne Robles</div>
+                                                    <p class="text-muted">Matron of Honor</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1b.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Angelica Esguerra</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Ryan Berino</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1d.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Zephanie Carlon</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/1b.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Mark Amos Carlon</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/1a.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Cris Jommel Lirio</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1g.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Aynne Charisse Avila</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Lorence Inao</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Rajul De Leon</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1i.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Judy Mae Lee</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/1c.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Timothy Bulalacao</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1c.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Shiela Marie Caberto</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1j.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Emy Loraine Gonzales</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1a.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Steffany Echanes</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Jovette Tobongbanua</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Joselito Tenoria Jr.</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1h.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Javannah Joy Magpantay</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Verwin Falejo</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel slide d-block d-lg-none" id="ww-carouselIndicator-MOBILE" data-ride="carousel" data-aos="zoom-in-up" data-aos-duration="1000" data-bs-interval="3000">
+                            <ol class="carousel-indicators">
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="0" class="active"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="1"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="2"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="3"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="4"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="5"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="6"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="7"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="8"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="9"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="10"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="11"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="12"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="13"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="14"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="15"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="16"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="17"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="18"></li>
+                                <li data-target="#ww-carouselIndicator-MOBILE" data-slide-to="19"></li>
+                            </ol>
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <!-- <div class="mt-4"> -->
+                                                <img class="card-img-top" src="images/grooms_men/1d.jpg" alt=""/>
+                                                <!-- </div> -->
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Aldale De Guzman</div>
+                                                    <!-- <p class="mb-0 text-muted">Best Friend</p> -->
+                                                    <p class="text-muted">Best Man</p>
+                                                    <!-- <div class="ww-social-links">
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-google-plus-g" aria-hidden="true"></i></a>
+                                                        <a class="btn btn-link" href="#"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                                                    </div> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1f.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Emie Joy Lirio</div>
+                                                    <p class="text-muted">Maid of Honor</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1e.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Rose Anne Robles</div>
+                                                    <p class="text-muted">Matron of Honor</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1b.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Angelica Esguerra</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Ryan Berino</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1d.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Zephanie Carlon</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/1b.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Mark Amos Carlon</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/1a.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Cris Jommel Lirio</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1g.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Aynne Charisse Avila</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Lorence Inao</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Rajul De Leon</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1i.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Judy Mae Lee</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/1c.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Timothy Bulalacao</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1c.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Shiela Marie Caberto</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1j.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Emy Loraine Gonzales</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1a.jpg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Steffany Echanes</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Jovette Tobongbanua</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Joselito Tenoria Jr.</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/brides_maid/1h.jpeg" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5">Javannah Joy Magpantay</div>
+                                                    <p class="text-muted">Bridesmaid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card d-block mb-3">
+                                                <img class="card-img-top" src="images/grooms_men/blank.png" alt=""/>
+                                                <div class="card-body text-center">
+                                                    <div class="h5 text-center">Verwin Falejo</div>
+                                                    <p class="text-muted">Groomsman</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container ww-couple-friends mt-5">
+                        <h2 class="h1 text-center pt-3 ww-title" data-aos="zoom-in-down" data-aos-duration="1000"><b>Principal &nbsp;Sponsors</b></h2>
+                        
+                        <!-- <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title">Mr. Freddie Lirio</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Rosalie Lirio</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Charles Tingson</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Cathy Tingson</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Vicky Malabanan</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Bambie Malabanan</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Leigh Narvaez</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Jeck Narvaez</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Mark Lim</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Janette Lim</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Gemma Amisola</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Anton Amisola</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Maria Teresita Flores</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Rod Dinfotan</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Alfredo De Guzman</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Sophia De Guzman</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Elaine Coronado</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Albert Coronado</div>
+                                <div class="h3 text-center pt-3 ww-title">Mrs. Manilyn Matira</div>
+                                <div class="h3 text-center pt-3 ww-title">Mr. Louie Matira</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div> -->
+
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mr. &nbsp;Alfredo &nbsp;J. &nbsp;Lirio</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mrs. &nbsp;Rosalie &nbsp;C. &nbsp;Lirio</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Ptr. &nbsp;Charles &nbsp;C. &nbsp;Tingson</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mrs. &nbsp;Catherine &nbsp;D. &nbsp;Tingson</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Francisco &nbsp;S. &nbsp;Malabanan</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Ma. &nbsp;Victoria &nbsp;M. &nbsp;Malabanan</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Rafael &nbsp;R. &nbsp;De Leon</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Julieta &nbsp;J. &nbsp;De Leon</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Mark &nbsp;Franklin &nbsp;A. &nbsp;Lim</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Janette &nbsp;M. &nbsp;Lim</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Antonio &nbsp;E. &nbsp;Amisola</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Gemma &nbsp;M. &nbsp;Amisola</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Rod &nbsp;Dinfotan</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Maria &nbsp;Teresa &nbsp;M. &nbsp;Flores</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Alfred &nbsp;A. &nbsp;De &nbsp;Guzman</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Sofia &nbsp;R. &nbsp;De &nbsp;Guzman</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Albert &nbsp;M. &nbsp;Coronado</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Elaine &nbsp;P. &nbsp;Coronado</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Mr. &nbsp;Kristoffer &nbsp;John &nbsp;Louie &nbsp;A. &nbsp;Matira</div>
+                            </div>
+                            <div class="col-md-12 col-lg-5">
+                                <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Mrs. &nbsp;Manilyn &nbsp;R. &nbsp;Matira</div>
+                            </div>
+                            <div class="col-md-0 col-lg-1">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container ww-couple-friends mt-5">
+                        <h2 class="h1 text-center pt-3 ww-title" data-aos="zoom-in-down" data-aos-duration="1000"><b>Secondary &nbsp;Sponsors</b></h2>
+                        <div class="mb-3">
+                            <div class="text-center">
+                                <div class="row">
+                                    <div class="col-md-0 col-lg-1">
+
+                                    </div>
+                                    <div class="col-md-12 col-lg-5">
+                                        <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Christian &nbsp;Ladica</div>
+                                        <p class="text-muted" data-aos="fade-down-left" data-aos-duration="1500" style="font-size: 1.2rem;">Ring Bearer</p>
+                                    </div>
+                                    <div class="col-md-12 col-lg-5">
+                                        <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Angelo &nbsp;Agustin &nbsp;M. &nbsp;Carlon</div>
+                                        <p class="text-muted" data-aos="fade-down-right" data-aos-duration="1500" style="font-size: 1.2rem;">Bible Bearer</p>
+                                    </div>
+                                    <div class="col-md-0 col-lg-1">
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-4">
+                                        <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Athena &nbsp;Robles</div>
+                                        <p class="text-muted" data-aos="fade-down-left" data-aos-duration="1500" style="font-size: 1.2rem;">Flower Girl</p>
+                                    </div>
+                                    <div class="col-md-12 col-lg-4">
+                                        <div class="h3 text-center pt-3 ww-title" data-aos="zoom-in-down" data-aos-duration="1500">Miesha &nbsp;Jade &nbsp;Lim</div>
+                                        <p class="text-muted" data-aos="zoom-in-down" data-aos-duration="1500" style="font-size: 1.2rem;">Flower Girl</p>
+                                    </div>
+                                    <div class="col-md-12 col-lg-4">
+                                        <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Ellyssa &nbsp;Rhaine &nbsp;Gonzales</div>
+                                        <p class="text-muted" data-aos="fade-down-right" data-aos-duration="1500" style="font-size: 1.2rem;">Flower Girl</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-0 col-lg-1">
+
+                                    </div>
+                                    <div class="col-md-12 col-lg-5">
+                                        <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-left" data-aos-duration="1500">Zia &nbsp;Maulion</div>
+                                        <p class="text-muted" data-aos="fade-down-left" data-aos-duration="1500" style="font-size: 1.2rem;">Flower Girl</p>
+                                    </div>
+                                    <div class="col-md-12 col-lg-5">
+                                        <div class="h3 text-center pt-3 ww-title" data-aos="fade-down-right" data-aos-duration="1500">Kyla &nbsp;Destiny &nbsp;Magpantay</div>
+                                        <p class="text-muted" data-aos="fade-down-right" data-aos-duration="1500" style="font-size: 1.2rem;">Flower Girl</p>
+                                    </div>
+                                    <div class="col-md-0 col-lg-1">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ww-section bg-light" id="gallery">
+                    <div class="ww-photo-gallery">
+                        <div class="container">
+                            <h2 class="h1 text-center pb-3 ww-title" data-aos="zoom-in-down" data-aos-duration="1000">Photo Gallery</h2>
+                            <div class="col-md-12 text-center ww-category-filter mb-4">
+                                <!-- <a class="btn btn-outline-primary ww-filter-button" href="#" data-filter="all">All</a> -->
+                                <a class="btn btn-outline-primary ww-filter-button" href="#" data-filter="prenup_formal" id="btn_default_gallery"> Prenup - Formal</a>
+                                <a class="btn btn-outline-primary ww-filter-button" href="#" data-filter="prenup_casual">Prenup - Casual</a>
+                                <a class="btn btn-outline-primary ww-filter-button" href="#" data-filter="prenup_korean">Prenup - Korean</a>
+                                <a class="btn btn-outline-primary ww-filter-button" href="#" data-filter="prenup_unofficial">Prenup - Unofficial</a>
+                                <a class="btn btn-outline-primary ww-filter-button" href="#" data-filter="wedding_proposal">Wedding Proposal</a>
+                            </div>
+                            <div class="ww-gallery" data-aos="fade-zoom-in" data-aos-easing="ease-in-back" data-aos-delay="300" data-aos-duration="1000" data-aos-offset="0">
+                                <div class="card-columns">
+                                    <!-- PRENUP - FORMAL -->
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1d.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1d.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1c.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1c.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1e.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1e.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1f.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1f.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1b.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1b.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1g.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1g.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1a.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1a.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1h.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1h.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1j.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1j.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1i.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1i.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_formal"]'>
+                                        <a href="images/prenup_formal/1k.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_formal/1k.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+
+                                    <!-- PRENUP - CASUAL -->
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1h.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1h.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1f.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1f.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1g.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1g.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1c.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1c.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1d.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1d.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1e.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1e.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1a.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1a.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1i.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1i.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_casual"]'>
+                                        <a href="images/prenup_casual/1b.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_casual/1b.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+
+                                    <!-- PRENUP - KOREAN -->
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1c.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1c.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1i.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1i.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1a.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1a.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1j.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1j.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1h.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1h.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1l.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1l.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1b.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1b.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1e.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1e.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1g.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1g.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1d.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1d.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1k.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1k.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1m.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1m.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_korean"]'>
+                                        <a href="images/prenup_korean/1f.jpg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_korean/1f.jpg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+
+                                    <!-- PRENUP - UNOFFICIAL -->
+                                    <div class="card" data-groups='["prenup_unofficial"]'>
+                                        <a href="images/prenup_unofficial/1.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_unofficial/1.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_unofficial"]'>
+                                        <a href="images/prenup_unofficial/2.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_unofficial/2.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["prenup_unofficial"]'>
+                                        <a href="images/prenup_unofficial/3.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/prenup_unofficial/3.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+
+                                    <!-- WEDDING PROPOSAL -->
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1c.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1c.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1d.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1d.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1e.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1e.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1a.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1a.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1g.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1g.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1h.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1h.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1i.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1i.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1j.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1j.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1b.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1b.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1f.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1f.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1k.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1k.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="card" data-groups='["wedding_proposal"]'>
+                                        <a href="images/wedding_proposal/1l.jpeg" data-toggle="lightbox" data-gallery="ww-gallery">
+                                            <img class="img-fluid" src="images/wedding_proposal/1l.jpeg" loading="lazy" alt=""/>
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ww-section ww-rsvp-detail text-white" id="rsvp">
+                    <div class="container">
+                    <!-- <div class="container" data-aos="zoom-in-up" data-aos-duration="1000"> -->
+                        <div class="col text-center">
+                            <h2 class="h1 ww-title pb-3">Join Our Wedding</h2>
+                            <!-- <h2 class="h1 ww-title pb-3" data-aos="zoom-in-down" data-aos-duration="1000">Join Our Wedding</h2> -->
+                        </div>
+                        <div class="row ww-rsvp-form">
+                            <div class="col-md-10">
+                                <div class="card-body">
+                                <form action="" method="POST" id="form-rsvp">
+                                    <div class="row">
+                                        <div class="col md-6 pb-3">
+                                            <div class="form-group">
+                                                <label for="name-input">Your Name*</label>
+                                                <input class="form-control" id="name-input" type="text" name="rsvp_name" required="required"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pb-3">
+                                            <div class="form-group">
+                                                <label for="email-input">Your Email*</label>
+                                                <input class="form-control" id="email-input" type="email" name="rsvp_email" required="required"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col md-6 pb-3">
+                                            <div class="form-group">
+                                                <label for="guest-input">Number of Guests</label>
+                                                <select class="form-control" id="guest-input" name="rsvp_guests_count">
+                                                    <option value="1">One</option>
+                                                    <option value="2">Two</option>
+                                                    <option value="3">Three</option>
+                                                    <option value="4">Four</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pb-3">
+                                            <div class="form-group">
+                                                <label for="events-input">I am Attending</label>
+                                                <select class="form-control" id="events-input" name="rsvp_attending_events">
+                                                    <option value="all-event">All Events</option>
+                                                    <option value="wedding-ceremony">Wedding ceremony</option>
+                                                    <option value="reception-party">Reception Party</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="code-input">Invitation Code*</label>
+                                                <input class="form-control" id="code-input" type="text" name="rsvp_inv_code" required="required"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="message-input">Your Message</label>
+                                                <textarea class="form-control" id="message-input" name="rsvp_message" rows="4" style="min-height: 110px;"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-center">
+                                            <button class="btn btn-primary btn-submit" type="submit">Send</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ww-footer bg-light">
+                    <div class="container text-center py-4">
+                        <p class="my-0">&copy; Jomai & Jannel Wedding. All rights reserved.</p>
+                        <!-- <p class="mb-0">Design - <a class="credit" href="https://templateflip.com" target="_blank">TemplateFlip</a></p> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+
+        </footer>
+
+
+        <script src="scripts/jquery.min.js?ver=1.1.0"></script>
+        <script src="scripts/bootstrap.bundle.min.js?ver=1.1.0"></script>
+        <script src="scripts/aos.js?ver=1.1.0"></script>
+        <script src="scripts/ekko-lightbox.min.js?ver=1.1.0"></script>
+        <script src="scripts/sweetalert2.all.min.js"></script>
+        <script src="scripts/main.js?ver=1.1.0"></script>
+    </body>
+</html>
