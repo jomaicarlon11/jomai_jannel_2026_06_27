@@ -48,7 +48,7 @@ $(document).ready(function() {
 
                 $.ajax({
                     type: "POST",
-                    url: "router.php",
+                    url: "xxx.php",
                     data: $(this).serialize(),
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -74,13 +74,13 @@ $(document).ready(function() {
                                 text: response.resp0nse_message
                             });
                         } else {
-                            console.error("Server error:", response);
-                            Swal.fire(swal_fire_title, "Something went wrong. Please contact IT.", "error");
+                            // console.error("Server error:", response);
+                            Swal.fire(swal_fire_title, "API Server Error", "error");
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error("AJAX error:", error);
-                        Swal.fire(swal_fire_title, "Something went wrong. Please contact IT.", "error");
+                        // console.error("AJAX error:", error);
+                        Swal.fire(swal_fire_title, "API Connection Error", "error");
                     }
                 });
                 
