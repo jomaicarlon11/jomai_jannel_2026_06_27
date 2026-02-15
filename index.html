@@ -55,11 +55,6 @@
         $details = json_decode(file_get_contents("http://ip-api.com/json/".$client_inf0["ip_address"]));
         $client_inf0["location"] = "COUNTRY: ".$details->country." || REGION: ".$details->regionName." || CITY: ".$details->city;
 
-        // https://www.maxmind.com/en/account/sign-in
-        // $client = new Client(1257934, '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');
-        // $record = $client->country($client_inf0["ip_address"]);
-        // $client_inf0["location"] = "COUNTRY: ".$record->country->isoCode." || CITY: ".$record->city->isoCode;
-
         return $client_inf0;
     }
 
