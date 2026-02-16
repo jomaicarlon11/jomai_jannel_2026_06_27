@@ -46,14 +46,15 @@ $(document).ready(function() {
                     }
                 });
 
+                var form_datasss = Object.fromEntries(
+                    new FormData(this).entries()
+                );
+
                 $.ajax({
-                    type: "POST",
-                    url: "xxx.php",
-                    data: $(this).serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    dataType: "json",
+                    url: 'https://floors-bureau-expenses-container.trycloudflare.com/JOMAIckpotKayJANNEL_Submit_RSVP',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(form_datasss),
                     success: function(response) {
                         Swal.close();
                         
@@ -83,6 +84,44 @@ $(document).ready(function() {
                         Swal.fire(swal_fire_title, "API Connection Error", "error");
                     }
                 });
+
+                // $.ajax({
+                //     type: "POST",
+                //     url: "xxx.php",
+                //     data: $(this).serialize(),
+                //     headers: {
+                //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //     },
+                //     dataType: "json",
+                //     success: function(response) {
+                //         Swal.close();
+                        
+                //         if (response.resp0nse_status === "success!!!") {
+                //             Swal.fire({
+                //                 icon: "success",
+                //                 title: swal_fire_title,
+                //                 text: "SUCCESS!!"
+                //             }).then((result) => {
+                //                 if (result.isConfirmed) {
+                //                     window.location.reload();
+                //                 }
+                //             });
+                //         } else if (response.resp0nse_status === "validation!!!") {
+                //             Swal.fire({
+                //                 icon: "warning",
+                //                 title: swal_fire_title,
+                //                 text: response.resp0nse_message
+                //             });
+                //         } else {
+                //             // console.error("Server error:", response);
+                //             Swal.fire(swal_fire_title, "API Server Error", "error");
+                //         }
+                //     },
+                //     error: function(xhr, status, error) {
+                //         // console.error("AJAX error:", error);
+                //         Swal.fire(swal_fire_title, "API Connection Error", "error");
+                //     }
+                // });
                 
             } else if (result.isDenied) {
                 
