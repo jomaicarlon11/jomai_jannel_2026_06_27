@@ -51,7 +51,7 @@ $(document).ready(function() {
                 );
 
                 $.ajax({
-                    url: 'https://floors-bureau-expenses-container.trycloudflare.com/JOMAIckpotKayJANNEL_Submit_RSVP',
+                    url: 'https://owr4ftovxkfxorsrn7sdjkante0xdged.lambda-url.ap-southeast-1.on.aws/',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(form_datasss),
