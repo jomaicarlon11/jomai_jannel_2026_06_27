@@ -39,7 +39,7 @@ $(document).ready(function() {
 
                 Swal.fire({
                     title: swal_fire_title,
-                    text: 'Submitting RSVP and email sending is processing. Please wait....',
+                    text: 'Submitting RSVP'+($('#email-input').val()?.trim() ? " and email sending" : "")+' is processing. Please wait....',
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading();
